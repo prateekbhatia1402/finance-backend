@@ -26,10 +26,12 @@ export default function Transactions() {
                 'transactions': []
             }
             transactionsData['transactions'].forEach(value => {
+                let transType = value['type'] === 'b' ? 'bought' : 'sold';
                 reqData['transactions'].push([
-                    value['type'],
+                    transType,
                     [new Date(value['ttime']).toLocaleString(),
-                    value['stockid'],
+                        transType,
+                    value['stockid'].toUpperCase(),
                     value['stockname'],
                     value['price'],
                     value['qty'].toFixed(2),
@@ -51,12 +53,12 @@ export default function Transactions() {
 
     return (
         <div>
-            <h4 style={{ "textAlign": "right " }}>Welcome, {(userData && userData.uname) || 'user'}</h4>
             <ErrorMsg value={status}></ErrorMsg>
             <table className="table table-striped">
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Bought/Sold</th>
                         <th>Stock</th>
                         <th>NAME</th>
                         <th>Price</th>
@@ -67,10 +69,10 @@ export default function Transactions() {
                 <tbody>
 
                     {
-                        data['transactions'].map((value, i) => <TableRow value={value[1]} className={value[0] === 'b' ? 'bought' : 'sold'} key={i} />)
+                        data['transactions'].map((value, i) => <TableRow value={value[1]} className={value[0]} key={i} />)
                     }
                     <tr>
-                        <td colSpan={5}>Available Cash</td>
+                        <td colSpan={6}>Available Cash</td>
                         <td>{data['cash']}</td>
                     </tr>
                 </tbody>

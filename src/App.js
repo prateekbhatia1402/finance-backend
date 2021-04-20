@@ -20,7 +20,7 @@ function App() {
     token: localStorage.getItem('auth-token'),
     user: localStorage.getItem('user')
   })
-
+  const API_ADDRESS = "https://cs50finance-backend.herokuapp.com/";
   const [transactionsData, setTransactionsData] = useState({
     'transactions': [],
     'cash': 0,
@@ -35,7 +35,7 @@ function App() {
     const token = localStorage.getItem('auth-token')
     if (!token) return;
     try {
-      const res = await Axios.get('http://localhost:8000/finance/transactions',
+      const res = await Axios.get('https://cs50finance-backend.herokuapp.com/finance/transactions',
         { headers: { 'x-auth-token': token } });
       if (res.data) {
         console.log('data retreived : ', res)
@@ -85,7 +85,7 @@ function App() {
         let stock_ids = []
         for (let key of keys) {
           stock_ids.push(key);
-        }for (let entry of shares.entries()) {
+        } for (let entry of shares.entries()) {
           let key = entry[0]
           let value = entry[1]
           shares_data[key] = value
@@ -112,7 +112,7 @@ function App() {
       token = ""
     }
     try {
-      const tokenRes = await Axios.get('http://localhost:8000/auth/',
+      const tokenRes = await Axios.get('https://cs50finance-backend.herokuapp.com/auth/',
         { headers: { 'x-auth-token': token } });
       console.log(tokenRes);
       if (tokenRes.data) {

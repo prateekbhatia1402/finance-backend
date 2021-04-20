@@ -2,13 +2,14 @@ import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import UserContext from '../context/UserContext';
 import { logout } from '../services/auth_services';
+import logo from '../logo.svg';
 
 export default function Header() {
     const { userData, setUserData } = useContext(UserContext)
     return (
         <div>
             <nav className="navbar navbar-expand-md navbar-light bg-light border">
-                <div><Link className="nav-link" to="/">App </Link></div>
+                <div><Link className="nav-link" to="/"><img src={logo}></img> </Link></div>
                 <>
                     {
                         userData && userData.user ?

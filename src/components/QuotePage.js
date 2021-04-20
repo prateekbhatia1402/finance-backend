@@ -46,6 +46,7 @@ export default function QuotePage() {
             <br></br>
             <h3>{priceData['name']}</h3>
             <div >{priceData['price']}</div>
+            <footer><a href="https://iexcloud.io">Data provided by IEX Cloud</a></footer>
         </>
     )
 }

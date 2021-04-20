@@ -59,29 +59,29 @@ export default function Home() {
         let stock_ids_remove = []
         for (let key of summaryKeys) {
             if (!(key in sharePricesKeys))
-            stock_ids_add.push(key);
+                stock_ids_add.push(key);
         }
         for (let key of sharePricesKeys) {
             if (!(key in summaryKeys))
-            stock_ids_remove.push(key);
+                stock_ids_remove.push(key);
         }
         if (stock_ids_add.length < 1 && stock_ids_remove.length < 1)
             return;
         let share_prices = sharePrices
-        for (let key of stock_ids_remove){
+        for (let key of stock_ids_remove) {
             delete share_prices[key];
         }
         if (stock_ids_add.length < 1)
             return;
         let prices = await price_of_shares(stock_ids_add, userData.token);
-        
+
         let shares_total = 0
         for (let entry of Object.entries(summaryData.shares)) {
             let key = entry[0]
             let value = entry[1]
             let price = prices[key] || 0;
             share_prices[key] = price
-           //  value['price'] = price
+            //  value['price'] = price
             const amount = price * summaryData['shares'][key]['qty']
             shares_total += amount
         }
@@ -96,68 +96,68 @@ export default function Home() {
     if (!userData || userData === null || !userData.user || userData.user === null || userData.user === '') {
         history.push('/login')
     }
-/* 
-    const getData = async () => {
-        if (transactionsData['transactions'].length < 1)
-            return;
-        const reqData = {
-            'shares': []
-        }
-
-        let shares = transactionsData['transactions'].reduce(
-            function (a, b) {
-                let tdata;
-                if (a.has(b.stockid)) {
-                    tdata = a.get(b.stockid)
-                }
-                else {
-                    tdata = {
-                        'id': b.stockid,
-                        'name': b.stockname,
-                        'qty': 0
-                    };
-                }
-                //console.log('current data', tdata);
-                if (b.type === 'b') {
-                    tdata['qty'] += b.qty
-                }
-                else {
-                    tdata['qty'] -= b.qty
-                }
-                a.set(b.stockid, tdata)
-                return a;
-            },
-            new Map())
-        // console.log(shares)
-        // let shares_data = []
-        /* let keys = shares.keys()
-        let stock_ids = []
-        for (let key of keys) {
-            stock_ids.push(key);
-        }
-        console.log('share keys => ', stock_ids)
-        let prices = await price_of_shares(stock_ids, userData.token);
-        
-         
-        let shares_total = 0
-        for (let entry of shares.entries()) {
-            let key = entry[0]
-            let value = entry[1]
-            /*     let price = prices[key] || 0;
-                value['price'] = price
-                const amount = price * value['qty']
-                shares_total += amount
+    /* 
+        const getData = async () => {
+            if (transactionsData['transactions'].length < 1)
+                return;
+            const reqData = {
+                'shares': []
+            }
+    
+            let shares = transactionsData['transactions'].reduce(
+                function (a, b) {
+                    let tdata;
+                    if (a.has(b.stockid)) {
+                        tdata = a.get(b.stockid)
+                    }
+                    else {
+                        tdata = {
+                            'id': b.stockid,
+                            'name': b.stockname,
+                            'qty': 0
+                        };
+                    }
+                    //console.log('current data', tdata);
+                    if (b.type === 'b') {
+                        tdata['qty'] += b.qty
+                    }
+                    else {
+                        tdata['qty'] -= b.qty
+                    }
+                    a.set(b.stockid, tdata)
+                    return a;
+                },
+                new Map())
+            // console.log(shares)
+            // let shares_data = []
+            /* let keys = shares.keys()
+            let stock_ids = []
+            for (let key of keys) {
+                stock_ids.push(key);
+            }
+            console.log('share keys => ', stock_ids)
+            let prices = await price_of_shares(stock_ids, userData.token);
+            
              
-            shares_total += ((sharePrices[key] || 0) * value['qty'])
-            reqData['shares'].push([value['id'], value['name'], value['qty']])
+            let shares_total = 0
+            for (let entry of shares.entries()) {
+                let key = entry[0]
+                let value = entry[1]
+                /*     let price = prices[key] || 0;
+                    value['price'] = price
+                    const amount = price * value['qty']
+                    shares_total += amount
+                 
+                shares_total += ((sharePrices[key] || 0) * value['qty'])
+                reqData['shares'].push([value['id'], value['name'], value['qty']])
+            }
+            setShareTotal(shares_total)
+            reqData['cash'] = summaryData.cash.toFixed(2)
+            reqData['total'] = (summaryData.cash + shares_total).toFixed(2)
+            setSharesData(reqData)
+            setStatus('')
         }
-        setShareTotal(shares_total)
-        reqData['cash'] = summaryData.cash.toFixed(2)
-        reqData['total'] = (summaryData.cash + shares_total).toFixed(2)
-        setSharesData(reqData)
-        setStatus('')
-    }
- */
+     */
 
     const getData = async () => {
         if (summaryData['shares'].length < 1)
@@ -261,6 +261,7 @@ export default function Home() {
                         <td>{(shareTotal + Number(data['cash'])).toFixed(2)}</td>
                     </tr>
                 </tfoot>
+                <caption><a href="https://iexcloud.io">Price Data provided by IEX Cloud</a></caption>
             </table >
 
         </div >

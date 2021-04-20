@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-const API_ADDRESS = "http://localhost:8000/finance";
+const API_ADDRESS = "https://cs50finance-backend.herokuapp.com/finance";
 
 export const quote = function (sid, token) {
     const get_quote = async (stock_id, token) => {
@@ -43,7 +43,7 @@ export const buy = function (sid, qty, token) {
                 {
                     method: 'POST',
                     url: API_ADDRESS + '/buy',
-                    data: {stockid, qty},
+                    data: { stockid, qty },
                     validateStatus: () => true,
                     headers: { 'x-auth-token': token }
                 });
@@ -78,7 +78,7 @@ export const sell = function (sid, qty, token) {
                 {
                     method: 'POST',
                     url: API_ADDRESS + '/sell',
-                    data: {stockid, qty},
+                    data: { stockid, qty },
                     validateStatus: () => true,
                     headers: { 'x-auth-token': token }
                 });
@@ -133,6 +133,35 @@ export const quotes = function (sids, token) {
     return value;
 }
 
+
+export const direct_quotes = function (sids, token) {
+    const get_quotes_direct = async (sids, token) => {
+        try {
+            const res = await Axios(
+                {
+                    method: 'GET',
+                    url: API_ADDRESS + '/quotes?sids=' + JSON.stringify(sids),
+                    validateStatus: () => true,
+                    headers: { 'x-auth-token': token }
+                });
+            if (res.status === 200) {
+                return res.data.data;
+            }
+            else if (res.status === 404) {
+                return "Invalid request";
+            }
+            else {
+                return res.data.error;
+            }
+        }
+        catch (err) {
+            console.log(err.message)
+            return "Something went wrong"
+        }
+    }
+    const value = get_quotes_direct(sids, token);
+    return value;
+}
 
 export const price_of_shares = function (sids, token) {
     const get_prices = async (sids, token) => {

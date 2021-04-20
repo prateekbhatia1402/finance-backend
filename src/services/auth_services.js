@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_ADDRESS = "http://localhost:8000/auth";
+const API_ADDRESS = "https://cs50finance-backend.herokuapp.com/auth";
 
 export const login = function login(loginData) {
     const login_user = async (username, password) => {
