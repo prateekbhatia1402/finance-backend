@@ -22,8 +22,10 @@ export default function QuotePage() {
             setStatus('getting data... ')
             const res = await quote(sid, userData.token);
             setStatus(res[0])
-            if (res[0] === '')
+            if (res[0] === '') {
                 setPriceData(res[1])
+                console.log(res[1])
+            }
         }
         catch (err) {
             setStatus(err.message)
@@ -36,7 +38,7 @@ export default function QuotePage() {
             <form className="form-group">
                 <label htmlFor="sid"> Stock ID</label>
                 <input type="text" className="form-input" name="sid" id="sid"
-                    placeholder="NASDAQ SOTCK ID" onChange={
+                    placeholder="NASDAQ STOCK ID" onChange={
                         (e) =>
                             setSid(e.target.value)
                     }></input>

@@ -25,71 +25,8 @@ export default function Home() {
     const [sharePrices, setSharePrices] = useState(share_keys)
     const [shareTotal, setShareTotal] = useState(0)
 
-    const updatePrices = async function () {
-        fetching.current = true;
-        let keys = Object.keys(sharePrices)
-        if (keys.length < 1)
-            return;
-        let stock_ids = []
-        for (let key of keys) {
-            stock_ids.push(key);
-        }
-        let prices = await price_of_shares(stock_ids, userData.token);
-        let shares_total = 0
-        let share_prices = {}
-        for (let entry of Object.entries(summaryData.shares)) {
-            let key = entry[0]
-            let value = entry[1]
-            let price = prices[key] || 0;
-            share_prices[key] = price
-            value['price'] = price
-            const amount = price * summaryData['shares'][key]['qty']
-            shares_total += amount
-        }
-        setShareTotal(shares_total)
-        setSharePrices(share_prices)
-        fetching.current = false
-    }
 
-    const updatePriceList = async function () {
-        console.log('updating price lists')
-        let summaryKeys = Object.keys(summaryData.shares)
-        let sharePricesKeys = Object.keys(summaryData.shares)
-        let stock_ids_add = []
-        let stock_ids_remove = []
-        for (let key of summaryKeys) {
-            if (!(key in sharePricesKeys))
-                stock_ids_add.push(key);
-        }
-        for (let key of sharePricesKeys) {
-            if (!(key in summaryKeys))
-                stock_ids_remove.push(key);
-        }
-        if (stock_ids_add.length < 1 && stock_ids_remove.length < 1)
-            return;
-        let share_prices = sharePrices
-        for (let key of stock_ids_remove) {
-            delete share_prices[key];
-        }
-        if (stock_ids_add.length < 1)
-            return;
-        let prices = await price_of_shares(stock_ids_add, userData.token);
 
-        let shares_total = 0
-        for (let entry of Object.entries(summaryData.shares)) {
-            let key = entry[0]
-            let value = entry[1]
-            let price = prices[key] || 0;
-            share_prices[key] = price
-            //  value['price'] = price
-            const amount = price * summaryData['shares'][key]['qty']
-            shares_total += amount
-        }
-        console.log('priceList Now=> ', share_prices)
-        console.log('shareTotal Now=> ', shares_total)
-        setShareTotal(shares_total)
-        setSharePrices(share_prices)
-    }
 
     const [status, setStatus] = useState('getting data from server')
     const history = useHistory()
@@ -117,7 +54,7 @@ export default function Home() {
                             'qty': 0
                         };
                     }
-                    //console.log('current data', tdata);
+                    //// console.log('current data', tdata);
                     if (b.type === 'b') {
                         tdata['qty'] += b.qty
                     }
@@ -128,14 +65,14 @@ export default function Home() {
                     return a;
                 },
                 new Map())
-            // console.log(shares)
+            // // console.log(shares)
             // let shares_data = []
             /* let keys = shares.keys()
             let stock_ids = []
             for (let key of keys) {
                 stock_ids.push(key);
             }
-            console.log('share keys => ', stock_ids)
+            // console.log('share keys => ', stock_ids)
             let prices = await price_of_shares(stock_ids, userData.token);
             
              
@@ -159,46 +96,111 @@ export default function Home() {
         }
      */
 
-    const getData = async () => {
-        if (summaryData['shares'].length < 1)
-            return;
-        const reqData = {
-            'shares': []
-        }
-        let shares = summaryData['shares']
-        let shares_total = 0
-        for (let entry of Object.entries(shares)) {
-            let key = entry[0]
-            let value = entry[1]
-            shares_total += ((sharePrices[key] || 0) * value['qty'])
-            reqData['shares'].push([value['id'], value['name'], value['qty']])
-        }
-        setShareTotal(shares_total)
-        reqData['cash'] = summaryData.cash.toFixed(2)
-        reqData['total'] = (summaryData.cash + shares_total).toFixed(2)
-        setSharesData(reqData)
-        setStatus('')
-    }
 
 
     useEffect(() => {
+        const updatePrices = async function () {
+            fetching.current = true;
+            let keys = Object.keys(sharePrices)
+            if (keys.length < 1)
+                return;
+            let stock_ids = []
+            for (let key of keys) {
+                stock_ids.push(key);
+            }
+            let prices = await price_of_shares(stock_ids, userData.token);
+            let shares_total = 0
+            let share_prices = {}
+            for (let entry of Object.entries(summaryData.shares)) {
+                let key = entry[0]
+                let value = entry[1]
+                let price = prices[key] || 0;
+                share_prices[key] = price
+                value['price'] = price
+                const amount = price * summaryData['shares'][key]['qty']
+                shares_total += amount
+            }
+            setShareTotal(shares_total)
+            setSharePrices(share_prices)
+            fetching.current = false
+        }
+
         const intervalId = setInterval(() => {
             if (!fetching.current) {
                 updatePrices().catch(error => console.log(error));
             }
         }, 60000);
-
         return () => {
             clearInterval(intervalId);
         };
-    })
+    }, [])
 
     useEffect(() => {
+        const updatePriceList = async function () {
+            let summaryKeys = Object.keys(summaryData.shares)
+            let sharePricesKeys = Object.keys(summaryData.shares)
+            let stock_ids_add = []
+            let stock_ids_remove = []
+            for (let key of summaryKeys) {
+                if (!(key in sharePricesKeys))
+                    stock_ids_add.push(key);
+            }
+            for (let key of sharePricesKeys) {
+                if (!(key in summaryKeys))
+                    stock_ids_remove.push(key);
+            }
+            if (stock_ids_add.length < 1 && stock_ids_remove.length < 1)
+                return;
+            let share_prices = sharePrices
+            for (let key of stock_ids_remove) {
+                delete share_prices[key];
+            }
+            if (stock_ids_add.length < 1)
+                return;
+            let prices = await price_of_shares(stock_ids_add, userData.token);
+
+            let shares_total = 0
+            for (let entry of Object.entries(summaryData.shares)) {
+                let key = entry[0]
+                let value = entry[1]
+                let price = (prices && prices[key]) || 0;
+                share_prices[key] = price
+                //  value['price'] = price
+                const amount = price * value['qty']
+                shares_total += amount
+            }
+            console.log('priceList Now=> ', share_prices)
+            console.log('shareTotal Now=> ', shares_total)
+            setShareTotal(shares_total)
+            setSharePrices(share_prices)
+        }
+
         updatePriceList()
     }, [summaryData])
 
     useEffect(() => {
-        getData();
+        const getData = async () => {
+            if (summaryData['shares'].length < 1)
+                return;
+            const reqData = {
+                'shares': []
+            }
+            let shares = summaryData['shares']
+            let shares_total = 0
+            for (let entry of Object.entries(shares)) {
+                let key = entry[0]
+                let value = entry[1]
+                shares_total += ((sharePrices[key] || 0) * value['qty'])
+                reqData['shares'].push([value['id'], value['name'], value['qty']])
+            }
+            setShareTotal(shares_total)
+            reqData['cash'] = summaryData.cash.toFixed(2)
+            reqData['total'] = (summaryData.cash + shares_total).toFixed(2)
+            setSharesData(reqData)
+            setStatus('')
+        }
+
+        getData()
     }, [summaryData])
     return (
         <div>
@@ -218,7 +220,7 @@ export default function Home() {
                 <tbody>
                     {
                         data['shares'].map((value, i) => {
-                            console.log('rendering row ', value, i)
+                            // console.log('rendering row ', value, i)
                             return <tr key={i}>
                                 {
                                     value.map((value, index) => {

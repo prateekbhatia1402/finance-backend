@@ -18,37 +18,38 @@ export default function Transactions() {
     if (!userData || userData === null || !userData.user || userData.user === null || userData.user === '') {
         history.push('/login')
     }
-    const getData = async () => {
-        try {
-            console.log('transData ', transactionsData)
-            const reqData = {
-                'cash': transactionsData['cash'].toFixed(2),
-                'transactions': []
-            }
-            transactionsData['transactions'].forEach(value => {
-                let transType = value['type'] === 'b' ? 'bought' : 'sold';
-                reqData['transactions'].push([
-                    transType,
-                    [new Date(value['ttime']).toLocaleString(),
-                        transType,
-                    value['stockid'].toUpperCase(),
-                    value['stockname'],
-                    value['price'],
-                    value['qty'].toFixed(2),
-                    (value['price'] * value['qty']).toFixed(2)]])
-            })
-            setTransactionsData(reqData)
-            setStatus('')
 
-        }
-        catch (err) {
-            setStatus('could not get data')
-            console.log(transactionsData)
-            console.log('something went wrong', err)
-        }
-    }
     useEffect(() => {
-        getData();
+        const getData = async () => {
+            try {
+                console.log('transData ', transactionsData)
+                const reqData = {
+                    'cash': transactionsData['cash'].toFixed(2),
+                    'transactions': []
+                }
+                transactionsData['transactions'].forEach(value => {
+                    let transType = value['type'] === 'b' ? 'bought' : 'sold';
+                    reqData['transactions'].push([
+                        transType,
+                        [new Date(value['ttime']).toLocaleString(),
+                            transType,
+                        value['stockid'].toUpperCase(),
+                        value['stockname'],
+                        value['price'],
+                        value['qty'].toFixed(2),
+                        (value['price'] * value['qty']).toFixed(2)]])
+                })
+                setTransactionsData(reqData)
+                setStatus('')
+
+            }
+            catch (err) {
+                setStatus('could not get data')
+                console.log(transactionsData)
+                console.log('something went wrong', err)
+            }
+        }
+        getData()
     }, [transactionsData])
 
     return (
