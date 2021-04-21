@@ -96,45 +96,6 @@ export default function Home() {
         }
      */
 
-
-
-    useEffect(() => {
-        const updatePrices = async function () {
-            fetching.current = true;
-            let keys = Object.keys(sharePrices)
-            if (keys.length < 1)
-                return;
-            let stock_ids = []
-            for (let key of keys) {
-                stock_ids.push(key);
-            }
-            let prices = await price_of_shares(stock_ids, userData.token);
-            let shares_total = 0
-            let share_prices = {}
-            for (let entry of Object.entries(summaryData.shares)) {
-                let key = entry[0]
-                let value = entry[1]
-                let price = prices[key] || 0;
-                share_prices[key] = price
-                value['price'] = price
-                const amount = price * summaryData['shares'][key]['qty']
-                shares_total += amount
-            }
-            setShareTotal(shares_total)
-            setSharePrices(share_prices)
-            fetching.current = false
-        }
-
-        const intervalId = setInterval(() => {
-            if (!fetching.current) {
-                updatePrices().catch(error => console.log(error));
-            }
-        }, 60000);
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [])
-
     useEffect(() => {
         const updatePriceList = async function () {
             let summaryKeys = Object.keys(summaryData.shares)
@@ -158,14 +119,17 @@ export default function Home() {
             if (stock_ids_add.length < 1)
                 return;
             let prices = await price_of_shares(stock_ids_add, userData.token);
-
+            console.log('prices ', prices)
+            if (typeof prices !== typeof {})
+                prices = {}
             let shares_total = 0
             for (let entry of Object.entries(summaryData.shares)) {
                 let key = entry[0]
                 let value = entry[1]
-                let price = (prices && prices[key]) || 0;
+                let price = prices[key] || 0;
                 share_prices[key] = price
                 //  value['price'] = price
+                console.log('in update priceList : ', key, value, prices)
                 const amount = price * value['qty']
                 shares_total += amount
             }
@@ -177,6 +141,46 @@ export default function Home() {
 
         updatePriceList()
     }, [summaryData])
+
+
+    useEffect(() => {
+        const updatePrices = async function () {
+            fetching.current = true;
+            let keys = Object.keys(sharePrices)
+            if (keys.length < 1)
+                return;
+            let stock_ids = []
+            for (let key of keys) {
+                stock_ids.push(key);
+            }
+            let prices = await price_of_shares(stock_ids, userData.token);
+            let shares_total = 0
+            let share_prices = {}
+            for (let entry of Object.entries(summaryData.shares)) {
+                let key = entry[0]
+                let value = entry[1]
+                let price = prices[key] || 0;
+                share_prices[key] = price
+                // value['price'] = price
+                console.log('in updatePrice: ', key, value, prices, price, share_prices)
+                const amount = price * summaryData['shares'][key]['qty']
+                shares_total += amount
+            }
+            setShareTotal(shares_total)
+            setSharePrices(share_prices)
+            fetching.current = false
+        }
+
+        const intervalId = setInterval(() => {
+            if (!fetching.current) {
+                updatePrices().catch(error => console.log(error));
+            }
+        }, 60000);
+        return () => {
+            clearInterval(intervalId);
+        };
+    })
+
 
     useEffect(() => {
         const getData = async () => {

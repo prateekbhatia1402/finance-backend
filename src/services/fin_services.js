@@ -180,15 +180,15 @@ export const price_of_shares = function (sids, token) {
             const price_data = await direct_quotes(sids, token)
             if (!price_data)
                 return null;
-            if (price_data.length === 1)
-                return price_data[0]['price']
-            else {
-                let res = {}
-                for (let value of price_data) {
-                    res[value['id']] = value['price']
-                }
-                return res;
+            /* if (price_data.length === 1)
+                return price_data[0]
+            else { */
+            let res = {}
+            for (let value of price_data) {
+                res[value['id']] = value['price']
             }
+            return res;
+            //}
         }
         catch (err) {
             console.log(err)
